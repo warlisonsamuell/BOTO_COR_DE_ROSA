@@ -53,27 +53,26 @@ async function extractText(url, textocompleto) {
     });
 
 
-
-    function extrairInformacaoEntreMarcadores(marcadorInicial, marcadorFinal, reseva1) {
+      //extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
+      function extrairInformacaoEntreMarcadores(marcadorInicial, marcadorFinal, reseva1,reseva2) {
         var inicioIndex = textocompleto.indexOf(marcadorInicial);
-    
+        var fimIndex = textocompleto.indexOf(marcadorFinal);
+
+
         // Certifique-se de que o marcador inicial existe no textocompleto
-        if (inicioIndex !== -1) {
-            var fimIndex = textocompleto.indexOf(marcadorFinal, inicioIndex + marcadorInicial.length);
-    
-            // Verifique se o marcador final foi encontrado
-            if (fimIndex !== -1) {
-                var informacaoEntreMarcadores = textocompleto.substring(inicioIndex + marcadorInicial.length, fimIndex).trim();
-                console.log(`${marcadorInicial}:`, informacaoEntreMarcadores);
-                return informacaoEntreMarcadores;
-            } else {
-                extrairInformacaoEntreMarcadores(marcadorInicial,reseva1)
-            }
-        } else {
-            console.log(`Não foi possível encontrar '${marcadorInicial}' no textocompleto.`);
-            return null;
+        if ((inicioIndex !== -1) && (fimIndex !== -1)) {
+          var fimIndex = textocompleto.indexOf(marcadorFinal, inicioIndex + marcadorInicial.length);
+          var informacaoEntreMarcadores = textocompleto.substring(inicioIndex + marcadorInicial.length, fimIndex).trim();
+          console.log(`${marcadorInicial}:`, informacaoEntreMarcadores);
+          return informacaoEntreMarcadores;
+
+        }else if ((inicioIndex !== -1) && (fimIndex == -1)){
+          extrairInformacaoEntreMarcadores(marcadorInicial,reseva1);
+        }else if (inicioIndex == -1){
+          console.log(`Não foi possível encontrar '${marcadorInicial}' no textocompleto.`);
         }
-    }
+        
+      }
     
     let CONTATO = extrairInformacaoEntreMarcadores("Contato", "Principais competências","Languages");
     let COMPETENCIAS = extrairInformacaoEntreMarcadores("Principais competências", "Languages","Certifications");
@@ -83,39 +82,128 @@ async function extractText(url, textocompleto) {
     let EXPERIENCIAS = extrairInformacaoEntreMarcadores("Experiência", "Formação acadêmica");
     
     let FORMACAO = textocompleto.substring(textocompleto.indexOf("Formação acadêmica") + "Formação acadêmica".length);
-
-
-    
-    console.log(`FORMACAO:`, FORMACAO);
+    console.log('formação:', FORMACAO)
 
     let timexp = textocompleto.substring(textocompleto.indexOf("Experiência") + "Experiência".length, textocompleto.indexOf("Formação acadêmica"));
 
-
     function extrairAnosMeses(texto_experiencia) {
-        let tempo_experiencia = 0;
-        var regex = /(\d*)\s*ano[s]?|(\d*)\s*m[eê]s[es]?|(\d+)\s*ano[s]?\s*(\d+)\s*m[eê]s[es]?/ig;
+      if (texto_experiencia == "Não foi possível encontrar Experiência no textocompleto."){
+        timexp = 0;
 
-        var matches;
-        var resultados = [];
-    
-        while ((matches = regex.exec(texto_experiencia)) !== null) {
-            var anos = parseInt(matches[1]) || 0;
-            var meses = parseInt(matches[2]) || 0;
-            var totalMeses = anos * 12 + meses;
-    
-            resultados.push({ anos, meses, totalMeses });
-            tempo_experiencia = tempo_experiencia + totalMeses;
+      }else{
+          
+          let tempo_experiencia = 0;
+          var regex = /(\d*)\s*ano[s]?|(\d*)\s*m[eê]s[es]?|(\d+)\s*ano[s]?\s*(\d+)\s*m[eê]s[es]?/ig;
+
+          var matches;
+          var resultados = [];
+      
+          while ((matches = regex.exec(texto_experiencia)) !== null) {
+              var anos = parseInt(matches[1]) || 0;
+              var meses = parseInt(matches[2]) || 0;
+              var totalMeses = anos * 12 + meses;
+      
+              resultados.push({ anos, meses, totalMeses });
+              tempo_experiencia = tempo_experiencia + totalMeses;
+          }
+          timexp = tempo_experiencia
+      
+          console.log("Tempo total de experiência:", tempo_experiencia, "meses");
         }
-        timexp = tempo_experiencia
-    
-        console.log("Tempo total de experiência:", tempo_experiencia, "meses");
     }
     
     // Exemplo de chamada da função
-    extrairAnosMeses(timexp);
-    console.log(timexp) //guardar o tempo de experiencia
+    if (textocompleto.indexOf("Experiência") !== -1){
+      extrairAnosMeses(timexp);
+    }else{
+      console.log("Sem experiencia")
+    }
+    
     
 
+    function escolaridade(FORMACAO){
+      var ensinoMedio = FORMACAO.indexOf("Ensino Médio");
+      var mestrado = FORMACAO.indexOf("Mestrado");
+      var bacharelado = FORMACAO.indexOf("Bacharelado");
+      var tecnologo = FORMACAO.indexOf("Técnologo");
+      var licenciatura = FORMACAO.indexOf("Licenciatura");
+      var posGraduacao = FORMACAO.indexOf("Pós-graduação");
+      var doutorado = FORMACAO.indexOf("Doutorado");
+
+    
+      //DOUTORADO
+      if (doutorado !== -1){
+        doutorado = 1;
+        ensinoMedio = 1;
+        console.log(`doutorado`, doutorado);
+      }else{
+        doutorado = 0;
+        console.log(`doutorado`, doutorado);
+      }
+
+      //MESTRADO
+      if (mestrado !== -1){
+        mestrado = 1;
+        ensinoMedio = 1;
+        console.log(`mestrado`, mestrado);
+      }else{
+        mestrado = 0;
+        console.log(`mestrado`, mestrado);
+      }
+
+      //BACHARELADO
+      if (bacharelado !== -1){
+        bacharelado = 1;
+        ensinoMedio = 1;
+        console.log(`bacharelado`, bacharelado);
+      }else{
+        bacharelado = 0;
+        console.log(`bacharelado`, bacharelado);
+      }
+
+      //TECNOLOGO
+      if (tecnologo !== -1){
+        tecnologo = 1;
+        ensinoMedio = 1;
+        console.log(`tecnologo`, tecnologo);
+      }else{
+        tecnologo = 0;
+        console.log(`tecnologo`, tecnologo);
+      }
+
+      //LICENCIATURA
+      if (licenciatura !== -1){
+        licenciatura = 1
+        ensinoMedio = 1;;
+        console.log(`licenciatura`, licenciatura);
+      }else{
+        licenciatura = 0;
+        console.log(`licenciatura`, licenciatura);
+      }
+
+      //PÓS GRADUAÇÃO
+      if (posGraduacao !== -1){
+        posGraduacao = 1;
+        ensinoMedio = 1;
+        console.log(`posGraduacao`, posGraduacao);
+      }else{
+        posGraduacao = 0;
+        console.log(`posGraduacao`, posGraduacao);
+      }
+
+      //ENSINO MÉDIO
+      if (ensinoMedio != 1){
+        if (ensinoMedio !== -1){
+          ensinoMedio =1;
+        } else{
+          ensinoMedio = 0;
+        }
+      }
+      
+    }
+    escolaridade(FORMACAO);
+     
+    
     afterProcess(); // Exibe a seção de resultado
   } catch (err) {
     alert(err.message);
@@ -132,4 +220,3 @@ function afterProcess() {
   afterupload.style.display = "flex"; 
   document.querySelector(".another").style.display = "unset";
 }
-
