@@ -57,34 +57,46 @@ async function extractText(url, textocompleto) {
       function extrairInformacaoEntreMarcadores(marcadorInicial, marcadorFinal, reseva1,reseva2) {
         var inicioIndex = textocompleto.indexOf(marcadorInicial);
         var fimIndex = textocompleto.indexOf(marcadorFinal);
-
+        let istrue = true;
 
         // Certifique-se de que o marcador inicial existe no textocompleto
         if ((inicioIndex !== -1) && (fimIndex !== -1)) {
           var fimIndex = textocompleto.indexOf(marcadorFinal, inicioIndex + marcadorInicial.length);
           var informacaoEntreMarcadores = textocompleto.substring(inicioIndex + marcadorInicial.length, fimIndex).trim();
-          console.log(`${marcadorInicial}:`, informacaoEntreMarcadores);
           return informacaoEntreMarcadores;
 
         }else if ((inicioIndex !== -1) && (fimIndex == -1)){
           extrairInformacaoEntreMarcadores(marcadorInicial,reseva1);
         }else if (inicioIndex == -1){
+          istrue = false;
           console.log(`Não foi possível encontrar '${marcadorInicial}' no textocompleto.`);
+          return istrue;
         }
         
       }
-    
-    let CONTATO = extrairInformacaoEntreMarcadores("Contato", "Principais competências","Languages");
-    let COMPETENCIAS = extrairInformacaoEntreMarcadores("Principais competências", "Languages","Certifications");
-    let LANGUAGES = extrairInformacaoEntreMarcadores("Languages", "Certifications", "Resumo");
-    let CERTIFICATIONS = extrairInformacaoEntreMarcadores("Certifications", "Resumo", "Experiência");
-    let RESUMO = extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
-    let EXPERIENCIAS = extrairInformacaoEntreMarcadores("Experiência", "Formação acadêmica");
+
+      let LANGUAGE = extrairInformacaoEntreMarcadores("Languages", "Certifications", "Resumo");
+      let CONTATO = extrairInformacaoEntreMarcadores("Contato", "Principais competências","Languages");
+      console.log(CONTATO)
+      let COMPETENCIAS = extrairInformacaoEntreMarcadores("Principais competências", "Languages","Certifications");
+      console.log(COMPETENCIAS)
+      let CERTIFICATIONS = extrairInformacaoEntreMarcadores("Certifications", "Resumo", "Experiência");
+      console.log(CERTIFICATIONS)
+      let RESUMO = extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
+      console.log(RESUMO)
+      let EXPERIENCIAS = extrairInformacaoEntreMarcadores("Experiência", "Formação acadêmica");
+      console.log(EXPERIENCIAS)
     
     let FORMACAO = textocompleto.substring(textocompleto.indexOf("Formação acadêmica") + "Formação acadêmica".length);
     console.log('formação:', FORMACAO)
 
     let timexp = textocompleto.substring(textocompleto.indexOf("Experiência") + "Experiência".length, textocompleto.indexOf("Formação acadêmica"));
+
+    let english = extrairInformacaoEntreMarcadores("Inglês (", ")")
+    console.log("nivel de ingles: "+english)
+
+    let spanish = extrairInformacaoEntreMarcadores("Espanhol (", ")")
+    console.log("nivel de espanhol: "+spanish)
 
     function extrairAnosMeses(texto_experiencia) {
       if (texto_experiencia == "Não foi possível encontrar Experiência no textocompleto."){
@@ -92,32 +104,60 @@ async function extractText(url, textocompleto) {
 
       }else{
           
-          let tempo_experiencia = 0;
-          var regex = /(\d*)\s*ano[s]?|(\d*)\s*m[eê]s[es]?|(\d+)\s*ano[s]?\s*(\d+)\s*m[eê]s[es]?/ig;
+        let tempo_experiencia = 0;
+        var regex = /(\d*)\s*ano[s]?|(\d*)\s*m[eê]s[es]?|(\d+)\s*ano[s]?\s*(\d+)\s*m[eê]s[es]?/ig;
 
-          var matches;
-          var resultados = [];
+        var matches;
+        var resultados = [];
       
           while ((matches = regex.exec(texto_experiencia)) !== null) {
-              var anos = parseInt(matches[1]) || 0;
-              var meses = parseInt(matches[2]) || 0;
-              var totalMeses = anos * 12 + meses;
+            var anos = parseInt(matches[1]) || 0;
+            var meses = parseInt(matches[2]) || 0;
+            var totalMeses = anos * 12 + meses;
       
-              resultados.push({ anos, meses, totalMeses });
-              tempo_experiencia = tempo_experiencia + totalMeses;
+            resultados.push({ anos, meses, totalMeses });
+            tempo_experiencia = tempo_experiencia + totalMeses;
           }
-          timexp = tempo_experiencia
-      
-          console.log("Tempo total de experiência:", tempo_experiencia, "meses");
-        }
+        timexp = tempo_experiencia
+        return tempo_experiencia
+      }
     }
     
     // Exemplo de chamada da função
     if (textocompleto.indexOf("Experiência") !== -1){
-      extrairAnosMeses(timexp);
+      console.log("tempo de experiencia:" + extrairAnosMeses(timexp) + " meses");
     }else{
       console.log("Sem experiencia")
     }
+
+
+    function acharTermo(competencia){
+      if  (COMPETENCIAS.indexOf(competencia) !== -1){
+        return COMPETENCIAS.substring(COMPETENCIAS.indexOf(competencia) ,COMPETENCIAS.indexOf(competencia) + competencia.length);
+      }else if  (LANGUAGE.indexOf(competencia) !== -1){
+        return LANGUAGE.substring(LANGUAGE.indexOf(competencia) ,LANGUAGE.indexOf(competencia) + competencia.length);
+      }else if  (CERTIFICATIONS.indexOf(competencia) !== -1){
+        return CERTIFICATIONS.substring(CERTIFICATIONS.indexOf(competencia) ,CERTIFICATIONS.indexOf(competencia) + competencia.length);
+      }
+      else{
+        return null
+      } 
+    }
+
+
+    let sqlcomp = acharTermo("SQL")
+    console.log(sqlcomp)
+    let desThink = acharTermo("Design Think")
+    console.log(desThink)
+    let javSc = acharTermo("JavaScript")
+    console.log(javSc)
+
+    let manaus = acharTermo("Manaus")
+    console.log(manaus)
+
+
+    
+
     
     
 
