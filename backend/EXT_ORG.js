@@ -1,15 +1,16 @@
 let alltext = [];
 let textocompleto;
+let pessoa_info = [];
 
 
 pdfjsLib.GlobalWorkerOptions.workerSrc ="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js";
 
 // Obtém referências para vários elementos
 let pdfinput = document.querySelector(".selectpdf"); // Referência ao campo de input do arquivo PDF
-let upload = document.querySelector(".upload"); // Referência ao botão de upload
+let upload = document.querySelector(".upload");// Referência ao botão de upload
 let afterupload = document.querySelector(".afterupload"); // Referência à seção de resultado
 let select = document.querySelector("select"); // Referência ao menu suspenso de seleção de página
-let download = document.querySelector(".download"); // Referência ao link de download
+let download = document.querySelector(".upload"); // Referência ao link de download
 let pdftext = document.querySelector(".pdftext"); // Referência à área de texto para exibir o texto extraído
 
 // Evento de escuta para o clique no botão de upload
@@ -53,40 +54,42 @@ async function extractText(url, textocompleto) {
     });
 
 
-      //extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
-      function extrairInformacaoEntreMarcadores(marcadorInicial, marcadorFinal, reseva1,reseva2) {
-        var inicioIndex = textocompleto.indexOf(marcadorInicial);
-        var fimIndex = textocompleto.indexOf(marcadorFinal);
-        let istrue = true;
+    //extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
+      function extrairInformacaoEntreMarcadores(marcadorInicial, marcadorFinal, reseva1) {
+      var inicioIndex = textocompleto.indexOf(marcadorInicial);
+      var fimIndex = textocompleto.indexOf(marcadorFinal);
+      let istrue = true;
 
-        // Certifique-se de que o marcador inicial existe no textocompleto
-        if ((inicioIndex !== -1) && (fimIndex !== -1)) {
-          var fimIndex = textocompleto.indexOf(marcadorFinal, inicioIndex + marcadorInicial.length);
-          var informacaoEntreMarcadores = textocompleto.substring(inicioIndex + marcadorInicial.length, fimIndex).trim();
-          return informacaoEntreMarcadores;
+      // Certifique-se de que o marcador inicial existe no textocompleto
+      if ((inicioIndex !== -1) && (fimIndex !== -1)) {
+        var fimIndex = textocompleto.indexOf(marcadorFinal, inicioIndex + marcadorInicial.length);
+        var informacaoEntreMarcadores = textocompleto.substring(inicioIndex + marcadorInicial.length, fimIndex).trim();
+        return informacaoEntreMarcadores;
 
-        }else if ((inicioIndex !== -1) && (fimIndex == -1)){
-          extrairInformacaoEntreMarcadores(marcadorInicial,reseva1);
-        }else if (inicioIndex == -1){
-          istrue = false;
-          console.log(`Não foi possível encontrar '${marcadorInicial}' no textocompleto.`);
-          return istrue;
-        }
-        
+      }else if ((inicioIndex !== -1) && (fimIndex == -1)){
+        extrairInformacaoEntreMarcadores(marcadorInicial,reseva1);
+      }else if (inicioIndex == -1){
+        istrue = false;
+        console.log(`Não foi possível encontrar '${marcadorInicial}' no textocompleto.`);
+        return istrue;
+      }else{
+        return null
       }
+        
+    }
 
-      let LANGUAGE = extrairInformacaoEntreMarcadores("Languages", "Certifications", "Resumo");
-      let CONTATO = extrairInformacaoEntreMarcadores("Contato", "Principais competências","Languages");
-      console.log(CONTATO)
-      let COMPETENCIAS = extrairInformacaoEntreMarcadores("Principais competências", "Languages","Certifications");
-      console.log(COMPETENCIAS)
-      let CERTIFICATIONS = extrairInformacaoEntreMarcadores("Certifications", "Resumo", "Experiência");
-      console.log(CERTIFICATIONS)
-      let RESUMO = extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
-      console.log(RESUMO)
-      let EXPERIENCIAS = extrairInformacaoEntreMarcadores("Experiência", "Formação acadêmica");
-      console.log(EXPERIENCIAS)
-    
+    let CONTATO = extrairInformacaoEntreMarcadores("Contato", "Principais competências","Languages");
+    console.log(CONTATO)
+    let COMPETENCIAS = extrairInformacaoEntreMarcadores("Principais competências", "Languages","Certifications");
+    console.log(COMPETENCIAS)
+    let LANGUAGE = extrairInformacaoEntreMarcadores("Languages", "Certifications", "Resumo");
+    console.log(LANGUAGE)
+    let CERTIFICATIONS = extrairInformacaoEntreMarcadores("Certifications", "Resumo", "Experiência");
+    console.log(CERTIFICATIONS)
+    let RESUMO = extrairInformacaoEntreMarcadores("Resumo", "Experiência", "Formação acadêmica");
+    console.log(RESUMO)
+    let EXPERIENCIAS = extrairInformacaoEntreMarcadores("Experiência", "Formação acadêmica");
+    console.log(EXPERIENCIAS)
     let FORMACAO = textocompleto.substring(textocompleto.indexOf("Formação acadêmica") + "Formação acadêmica".length);
     console.log('formação:', FORMACAO)
 
@@ -131,17 +134,20 @@ async function extractText(url, textocompleto) {
     }
 
 
-    function acharTermo(competencia){
-      if  (COMPETENCIAS.indexOf(competencia) !== -1){
-        return COMPETENCIAS.substring(COMPETENCIAS.indexOf(competencia) ,COMPETENCIAS.indexOf(competencia) + competencia.length);
-      }else if  (LANGUAGE.indexOf(competencia) !== -1){
-        return LANGUAGE.substring(LANGUAGE.indexOf(competencia) ,LANGUAGE.indexOf(competencia) + competencia.length);
-      }else if  (CERTIFICATIONS.indexOf(competencia) !== -1){
-        return CERTIFICATIONS.substring(CERTIFICATIONS.indexOf(competencia) ,CERTIFICATIONS.indexOf(competencia) + competencia.length);
+    function acharTermo(termo){
+      if  (COMPETENCIAS && COMPETENCIAS.indexOf(termo) !== -1){
+        return COMPETENCIAS.substring(COMPETENCIAS.indexOf(termo) ,COMPETENCIAS.indexOf(termo) + termo.length);
+      }else if  (LANGUAGE && LANGUAGE.indexOf(termo) !== -1){
+        return LANGUAGE.substring(LANGUAGE.indexOf(termo) ,LANGUAGE.indexOf(termo) + termo.length);
+      }else if  (CERTIFICATIONS && CERTIFICATIONS.indexOf(termo) !== -1){
+        return CERTIFICATIONS.substring(CERTIFICATIONS.indexOf(termo) ,CERTIFICATIONS.indexOf(termo) + termo.length);
+      }else if  (RESUMO && RESUMO.indexOf(termo) !== -1){
+        return RESUMO.substring(RESUMO.indexOf(termo) ,RESUMO.indexOf(termo) + termo.length);
+      }else if  (EXPERIENCIAS && EXPERIENCIAS.indexOf(termo) !== -1){
+        return EXPERIENCIAS.substring(EXPERIENCIAS.indexOf(termo) ,EXPERIENCIAS.indexOf(termo) + termo.length);
+      }else{
+        return false
       }
-      else{
-        return null
-      } 
     }
 
 
@@ -156,13 +162,8 @@ async function extractText(url, textocompleto) {
     console.log(manaus)
 
 
-    
-
-    
-    
-
     function escolaridade(FORMACAO){
-      var ensinoMedio = FORMACAO.indexOf("Ensino Médio");
+      var ensinoMedio = FORMACAO.indexOf("Ensino médio");
       var mestrado = FORMACAO.indexOf("Mestrado");
       var bacharelado = FORMACAO.indexOf("Bacharelado");
       var tecnologo = FORMACAO.indexOf("Técnologo");
@@ -232,23 +233,43 @@ async function extractText(url, textocompleto) {
       }
 
       //ENSINO MÉDIO
-      if (ensinoMedio != 1){
-        if (ensinoMedio !== -1){
-          ensinoMedio =1;
-        } else{
-          ensinoMedio = 0;
-        }
+      if (ensinoMedio !== 1){
+        ensinoMedio = 0
       }
       
     }
     escolaridade(FORMACAO);
-     
-    
+
+
+
+    let email = CONTATO.substring(CONTATO[0], CONTATO.indexOf(".com") + ".com".length).trim();
+    console.log(email)
+
+    pessoa_info.push(email)
+    pessoa_info.push(email)
+
+    formacao_info = [];
+    formacao_info.push(1);
+    formacao_info.push(ensinoMedio);
+    formacao_info.push(posGraduacao);
+    formacao_info.push(mestrado);
+    formacao_info.push(doutorado);
+    console.log(formacao_info)
+
+
+
+
+
+
+       
+   
     afterProcess(); // Exibe a seção de resultado
-  } catch (err) {
-    alert(err.message);
-  }
+    } catch (err) {
+      alert(err.message);
+    }
+
 }
+
 
 
 
