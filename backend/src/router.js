@@ -1,20 +1,11 @@
 const express = require('express');
-const Connection = require('./models/connection');
 
 const router = express.Router();
 
+const PeopleController = require('./controllers/peopleController');
+const peopleController = new PeopleController();
 
-router.get("/pessoa", (req, res) => {
-    const query = "SELECT * FROM pessoa";
-
-    Connection.query(query,(err, result) => {
-        if(err){
-            res.status(500).send("Erro ao obter alunos");
-        } else {
-            res.json(result);
-        }
-    });
-});
-
+router.get('/pessoa', peopleController.index);
+router.get('/completeResume', peopleController.getAll);
 
 module.exports = router;
