@@ -4,30 +4,7 @@ let pessoa_info = [];
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
-// Obtém referências para vários elementos
-let pdfinput = document.querySelector('.selectpdf'); // Referência ao campo de input do arquivo PDF
-let upload = document.querySelector('.upload'); // Referência ao botão de upload
-let afterupload = document.querySelector('.afterupload'); // Referência à seção de resultado
 let select = document.querySelector('select'); // Referência ao menu suspenso de seleção de página
-let download = document.querySelector('.upload'); // Referência ao link de download
-let pdftext = document.querySelector('.pdftext'); // Referência à área de texto para exibir o texto extraído
-
-// Evento de escuta para o clique no botão de upload
-upload.addEventListener('click', () => {
-  let file = pdfinput.files[0]; // Obtém o arquivo PDF selecionado
-  if (file != undefined && file.type == 'application/pdf') {
-    let fr = new FileReader(); // Cria um novo objeto FileReader
-    fr.readAsDataURL(file); // Lê o arquivo como URL de dados
-
-    fr.onload = () => {
-      let res = fr.result; // Obtém o resultado da leitura do arquivo
-      extractText(res, textocompleto);
-    };
-  } else {
-    alert('Selecione um arquivo PDF válido');
-  }
-});
 
 async function extractText(url, textocompleto) {
   try {
@@ -283,8 +260,6 @@ async function extractText(url, textocompleto) {
       //ENSINO MÉDIO
       if (ensinoMedio !== 1) {
         ensinoMedio = 0;
-      } else {
-        ensinoMedio = 1;
       }
     }
     escolaridade(FORMACAO);
@@ -308,15 +283,6 @@ async function extractText(url, textocompleto) {
 
     afterProcess(); // Exibe a seção de resultado
   } catch (err) {
-    console.log(err);
     alert(err.message);
   }
-}
-
-function afterProcess() {
-  pdftext = textocompleto; // Exibe o texto extraído para a página selecionada
-  download.href =
-    'data:text/plain;charset=utf-8,' + encodeURIComponent(textocompleto);
-  afterupload.style.display = 'flex';
-  document.querySelector('.another').style.display = 'unset';
 }
