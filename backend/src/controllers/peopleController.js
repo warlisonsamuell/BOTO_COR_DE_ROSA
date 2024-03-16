@@ -1,4 +1,5 @@
 const Connection = require('../models/connection');
+const extractText = require('../utils/getInformationsFromPDF');
 
 class PeopleController {
   index(request, response) {
@@ -25,8 +26,17 @@ class PeopleController {
   }
 
   create(request, response) {
-    console.log(request.body);
-    response.send({ status: 'SUCCESS' });
+    const { nome, fullText } = request.body;
+    const { email, tempo_experiencia, escolaridade } = extractText(fullText);
+    const query = `INSERT INTO pessoa (nome, email, linkedin, cidade, estado, pais, tempo) VALUES ('${nome}', '${email}', 'pedro@linkedin.com', 'Manaus', 'Amazonas', 'Brazil', '${tempo_experiencia}')`;
+
+    Connection.query(query, (err, result) => {
+      if (err) {
+        response.status(500).send('Erro ao obter alunos');
+      }
+      response.status(203);
+    });
+    return response.json('ok');
   }
 }
 
