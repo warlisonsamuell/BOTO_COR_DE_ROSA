@@ -23,6 +23,11 @@ class PeopleController {
       return response.json(result);
     });
   }
+
+  create(request, response) {
+    console.log(request.body);
+    response.send({ status: 'SUCCESS' });
+  }
 }
 
 module.exports = PeopleController;
